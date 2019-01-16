@@ -1,12 +1,15 @@
 # Overview
 
-Forked from https://github.com/jpmens/check-mqtt, use it for main package information
+Forked from https://github.com/jpmens/check-mqtt.
 
-# Extra Configuration
+# Configuration
 
+New command line argument(s):
+
+```
   -T <transport>, --transport <transport>
                         connection protocol (default: tcp)
-
+```
 
 # Examples
 
