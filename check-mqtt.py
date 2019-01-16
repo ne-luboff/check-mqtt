@@ -58,38 +58,41 @@ except ImportError:
 
 PROG='{} v{}'.format(os.path.basename(sys.argv[0]),VER)
 
+
 class Status:
     OK = 0
-    WARNING=1
-    CRITICAL=2
-    UNKNOWN=3
-nagios_codes = [ 'OK', 'WARNING', 'CRITICAL', 'UNKNOWN' ]
+    WARNING = 1
+    CRITICAL = 2
+    UNKNOWN = 3
+
+nagios_codes = ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN']
 
 DEFAULTS = {
-    'mqtt_host':        'localhost',
-    'mqtt_port':        1883,
-    'mqtt_username':    None,
-    'mqtt_password':    None,
-    'max_wait':         4,
-    'keepalive':        60,
-    'sleep':            0.1,
-    'mqtt_cafile':      None,
-    'mqtt_certfile':    None,
-    'mqtt_keyfile':     None,
-    'mqtt_insecure':    False,
-    'check_topic':      'nagios/test',
-    'check_subscription':None,
-    'mqtt_readonly':    False,
-    'mqtt_payload':     'PiNG',
-    'mqtt_jsonpath':    None,
-    'mqtt_value':       'PiNG',
-    'mqtt_operator':    'equal',
-    'warning':          None,
-    'critical':         None,
-    'short_output':     False,
+    'mqtt_host':          'localhost',
+    'mqtt_port':          1883,
+    'mqtt_username':      None,
+    'mqtt_password':      None,
+    'max_wait':           4,
+    'keepalive':          60,
+    'sleep':              0.1,
+    'mqtt_cafile':        None,
+    'mqtt_certfile':      None,
+    'mqtt_keyfile':       None,
+    'mqtt_insecure':      False,
+    'check_topic':        'nagios/test',
+    'check_subscription': None,
+    'mqtt_readonly':      False,
+    'mqtt_payload':       'PiNG',
+    'mqtt_jsonpath':      None,
+    'mqtt_value':         'PiNG',
+    'mqtt_operator':      'equal',
+    'warning':            None,
+    'critical':           None,
+    'short_output':       False,
+    'transport':          'tcp'
 }
 
-operators = ['eq','equal','lt','lessthan','gt','greaterthan','ct','contains']
+operators = ['eq', 'equal', 'lt', 'lessthan', 'gt', 'greaterthan', 'ct', 'contains']
 
 status = Status.OK
 message = ''
@@ -231,10 +234,11 @@ if module_math:
     parser.add_argument('-c', '--critical', metavar="<expr>", help="Exit with CRITICAL status if <expr> is true (default: '{}'). <expr> can be any Python expression, use <payload> within expression for current payload value.".format(DEFAULTS['critical']), dest='critical', default=DEFAULTS['critical'])
 parser.add_argument('-S', '--short', help="use a shorter string on output{}".format(" (default)" if DEFAULTS['short_output'] else ""), dest='short_output', default=DEFAULTS['short_output'], action='store_true')
 parser.add_argument('-V', '--version',  action='version', version=PROG)
+parser.add_argument('-T', '--transport', metavar="<transport>", help="transport protocol for connection (default: '{}')".format(DEFAULTS['transport']), dest='transport', default=DEFAULTS['transport'])
 
 args = parser.parse_args()
 
-#print args
+# print(args)
 
 if args.mqtt_payload.startswith('!'):
     try:
@@ -255,7 +259,7 @@ userdata = {
     'have_response' : False,
     'start_time'    : time.time(),
 }
-mqttc = paho.Client('nagios-%d' % (os.getpid()), clean_session=True, userdata=userdata, protocol=4)
+mqttc = paho.Client('nagios-%d' % (os.getpid()), clean_session=True, userdata=userdata, protocol=4, transport=args.transport)
 mqttc.on_message = on_message
 mqttc.on_connect = on_connect
 mqttc.on_disconnect = on_disconnect
